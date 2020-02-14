@@ -1,0 +1,38 @@
+{
+  "name": "@w11k/ts-mixins",
+  "version": "0.9.0",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "module": "./dist/es2015/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": "https://github.com/w11k/ng2-rx-componentdestroyed",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "dependencies": {
+    "@babel/plugin-proposal-class-properties": "7.8.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.2",
+    "jest": "^25.1.0",
+    "del-cli": "3.0.0",
+    "tslint": "^6.0.0",
+    "typescript": "^3.7.5",
+    "babel-jest": "latest",
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/preset-typescript": "^7.8.3",
+    "babel-preset-es2015": "^6.24.1"
+  },
+  "peerDependencies": {},
+  "scripts": {
+    "clean": "del-cli dist",
+    "build": "npm run clean ; tsc -p tsconfig.json && tsc -p tsconfig.dist.es2015.json",
+    "prepublishOnly": "npm test && npm run build",
+    "postpublish": "git push",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  }
+}
