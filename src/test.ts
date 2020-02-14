@@ -51,15 +51,13 @@ class Mixin1B {
     }
 }
 
-class Sub extends withMixins(BaseClass, Mixin1Sub, Mixin1B, OnDestroyMixin) {
+class Sub extends withMixins(BaseClass, Mixin1Sub, Mixin1B) {
 
     constructor() {
         super("", 2);
     }
 
     foo() {
-        this.observeOnDestroy()
-
         this.baseClassMethod();
         this.mixin1("");
         this.mixin1b();
