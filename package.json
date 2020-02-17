@@ -29,7 +29,6 @@
   },
   "peerDependencies": {},
   "scripts": {
-    "publish": "np",
     "clean": "del-cli dist",
     "build": "npm run clean ; tsc -p tsconfig.json && tsc -p tsconfig.dist.es2015.json",
     "test": "jest",
