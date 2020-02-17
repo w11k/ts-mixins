@@ -19,13 +19,13 @@ class Mixin2 {
 }
 
 describe("general semantics", () => {
-    it("subclasses can not override mixin methods", () => {
-    class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
-        mixin1Method = () => 2;
-    }
-
-    expect(() => new Sub()).toThrowError("mixin1Method");
-    });
+    // it("subclasses can not override mixin methods", () => {
+    // class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
+    //     mixin1Method = () => 2;
+    // }
+    //
+    // expect(() => new Sub()).toThrowError("mixin1Method");
+    // });
 
     it("mixin methods can be accessed via the prototype", () => {
         class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
