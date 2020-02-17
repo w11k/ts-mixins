@@ -1,84 +1,175 @@
-import {withMixins} from "./index";
+import {withBaseClassAndMixins, withMixins} from "./index";
 
 class BaseClass {
-
-    private counter = 0;
-
-    constructor(private readonly val1: string, private readonly val2: number) {
-    }
-
     baseClassMethod() {
-        console.log("baseClassMethod", this.counter++);
-    }
-}
-
-class WrongMixin {
-    constructor(private readonly val1: string, private readonly val2: number) {
+        return 0;
     }
 }
 
 class Mixin1 {
-
-    private counter = 0;
-
-    valueFromMixin1 = "abc";
-
-    mixin1(a: string) {
-        console.log("mixin1", a, this.counter++);
-    }
-
-    baseClassMethod(v2: Date) {
-        console.log("baseClassMethod in mixin", v2);
+    mixin1Method() {
+        return 1;
     }
 }
 
-class Mixin1Sub extends Mixin1 {
-    mixin1sub() {
-        console.log("mixin1sub");
+class Mixin2 {
+    mixin2Method() {
+        return 2;
     }
 }
 
-class Mixin1B {
-
-    private counter = 0;
-
-    mixin1(b: boolean) {
-        console.log("mixin1b", b);
+describe("general semantics", () => {
+    it("subclasses can not override mixin methods", () => {
+    class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
+        mixin1Method = () => 2;
     }
 
-    mixin1b() {
-        console.log("mixin1b", this.counter++);
-    }
-}
+    expect(() => new Sub()).toThrowError("mixin1Method");
+    });
 
-class Sub extends withMixins(BaseClass, Mixin1Sub, Mixin1B) {
+    it("mixin methods can be accessed via the prototype", () => {
+        class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
+        }
 
-    constructor() {
-        super("", 2);
-    }
+        expect(Sub.prototype.mixin1Method).toBeDefined();
+    });
 
-    foo() {
-        this.baseClassMethod();
-        this.mixin1("");
-        this.mixin1b();
+    it("a mixin can have state", () => {
+        class Mx {
+            state = 0;
 
-        this.baseClassMethod();
-        this.mixin1("");
-        this.mixin1b();
+            inc(by: number) {
+                this.state += by;
+            }
 
-        this.mixin1sub();
-    }
+            getState() {
+                return this.state;
+            }
+        }
 
-}
+        class Sub extends withBaseClassAndMixins(BaseClass, Mx) {
+        }
 
+        const sub = new Sub();
+        sub.inc(1);
+        sub.inc(2);
+        expect(sub.getState()).toEqual(3);
+    });
 
+    it("an inherited mixin can have state", () => {
+        class Mx1 {
+            state = 0;
 
-describe("mixin", () => {
-    it("test", () => {
+            inc(by: number) {
+                this.state += by;
+            }
+
+            getState() {
+                return this.state;
+            }
+        }
+
+        class Mx2 extends Mx1 {
+
+            state2 = 0;
+
+            inc2(by: number) {
+                this.state2 += by;
+            }
+
+            getState2() {
+                return this.state2;
+            }
+        }
+
+        class Sub extends withBaseClassAndMixins(BaseClass, Mx2) {
+        }
+
+        const sub = new Sub();
+
+        sub.inc(4);
+        sub.inc(9);
+        sub.inc2(1);
+        sub.inc2(2);
+        expect(sub.getState()).toEqual(13);
+        expect(sub.getState2()).toEqual(3);
+    });
+});
+
+describe("Angular", () => {
+    it("can get a mixin method from prototype and invoke it later", () => {
+        class NgMixin {
+            lifecycle() {
+                return 5;
+            }
+        }
+
+        class Comp extends withBaseClassAndMixins(BaseClass, NgMixin) {
+        }
+
+        const mm = Comp.prototype.lifecycle;
+        const comp = new Comp();
+        const result = mm.apply(comp, []);
+        expect(result).toEqual(5);
+    });
+});
+
+describe("withBaseClassAndMixins", () => {
+    it("preserves is-a relationship", () => {
+        class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
+        }
+
         const sub = new Sub();
         expect(sub).toBeInstanceOf(Sub);
         expect(sub).toBeInstanceOf(BaseClass);
-        sub.foo();
+    });
+
+    it("mixins do not have a is-a relationship", () => {
+        class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
+        }
+
+        const sub = new Sub();
+        expect(sub).not.toBeInstanceOf(Mixin1);
+    });
+});
+
+describe("withBaseClassAndMixins 1-n mixins are supported", () => {
+    it("1 mixin", () => {
+        class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
+        }
+
+        const sub = new Sub();
+        expect(sub.baseClassMethod()).toEqual(0);
+        expect(sub.mixin1Method()).toEqual(1);
+    });
+
+    it("2 mixins", () => {
+        class Sub extends withBaseClassAndMixins(BaseClass, Mixin1, Mixin2) {
+        }
+
+        const sub = new Sub();
+        expect(sub.baseClassMethod()).toEqual(0);
+        expect(sub.mixin1Method()).toEqual(1);
+        expect(sub.mixin2Method()).toEqual(2);
+    });
+});
+
+describe("withMixins 1-n mixins are supported", () => {
+    it("1 mixin", () => {
+        class Sub extends withMixins(Mixin1) {
+        }
+
+        const sub = new Sub();
+        expect(sub.mixin1Method()).toEqual(1);
+    });
+
+    it("2 mixins", () => {
+        class Sub extends withMixins(Mixin1, Mixin2) {
+        }
+
+        const sub = new Sub();
+        expect(sub.mixin1Method()).toEqual(1);
+        expect(sub.mixin2Method()).toEqual(2);
     });
 });
 
