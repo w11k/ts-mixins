@@ -101,7 +101,7 @@ export function withBaseClassAndMixins<BC extends Constructable>(
         baseClass: BC,
         ...mixins: Mixin[]
 ) {
-    const merged = class extends baseClass {
+    class BaseClassWithMixins extends baseClass {
         constructor(...args: any[]) {
             super(...args);
 
@@ -110,13 +110,13 @@ export function withBaseClassAndMixins<BC extends Constructable>(
                 Object.assign(this, mixin);
             });
         }
-    };
+    }
 
     mixins.forEach(mixin => {
         const allPropertyDescriptors = getAllPropertyDescriptors(mixin.prototype);
         allPropertyDescriptors.forEach(([name, desc]) => {
-            if (!hasProperty(merged.prototype, name)) {
-                Object.defineProperty(merged.prototype, name, {
+            if (!hasProperty(BaseClassWithMixins.prototype, name)) {
+                Object.defineProperty(BaseClassWithMixins.prototype, name, {
                     configurable: false,
                     enumerable: true,
                     value: desc.value
@@ -125,14 +125,14 @@ export function withBaseClassAndMixins<BC extends Constructable>(
                     //     if (typeof value === "function") {
                     //         return (...args: any[]) => (value as Function).apply(mixin, args);
                     //     }
-                    //     throw new Error(`A class can only access methods from a mixin (tried to access '${name}').`);
+                    //     throw new Error(`A class can only access methods from a mixin ( tried to access '${name}').`);
                     // },
                 });
             }
         });
     });
 
-    return merged;
+    return BaseClassWithMixins;
 }
 
 //////////////////////////////////////////////////////////////////////////////
