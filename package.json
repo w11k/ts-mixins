@@ -1,6 +1,6 @@
 {
   "name": "@w11k/ts-mixins",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "Apache-2.0",
   "main": "./dist/index.js",
   "module": "./dist/es2015/index.js",
@@ -35,7 +35,11 @@
     "test": "jest",
     "test:watch": "jest --watch"
   },
+  "np": {
+    "yarn": false
+  },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   }
 }

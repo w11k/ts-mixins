@@ -19,19 +19,31 @@ class Mixin2 {
 }
 
 describe("general semantics", () => {
-    // it("subclasses can not override mixin methods", () => {
-    // class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
-    //     mixin1Method = () => 2;
-    // }
-    //
-    // expect(() => new Sub()).toThrowError("mixin1Method");
-    // });
-
     it("mixin methods can be accessed via the prototype", () => {
         class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
         }
 
         expect(Sub.prototype.mixin1Method).toBeDefined();
+    });
+
+    it("mixin members must be compatible", () => {
+        class Mx1 {
+            mem = 0;
+        }
+        class Mx2 {
+            mem = "a";
+            set2() {
+                this.mem = "b";
+            }
+        }
+        class Sub extends withMixins(Mx1, Mx2) {
+            met() {
+                return this.mem;
+            }
+        }
+        const sub = new Sub();
+        sub.set2();
+        expect(sub.met()).toEqual(0);
     });
 
     it("a mixin can have state", () => {

@@ -55,7 +55,8 @@ function forwardMixinProperties(target: any, mixinClass: Mixin) {
 //////////////////////////////////////////////////////////////////////////////
 
 type FunctionPropertyNames<T> = { [K in keyof T]: T[K] extends Function ? K : never }[keyof T];
-type FunctionProperties<T> = Pick<T, FunctionPropertyNames<T>>;
+// type FunctionProperties<T> = Pick<T, FunctionPropertyNames<T>>;
+type FunctionProperties<T> = T;
 type PickNovelFunctions<A, B> = FunctionProperties<Pick<A, Exclude<keyof A, keyof B>>>;
 
 //////////////////////////////////////////////////////////////////////////////
