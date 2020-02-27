@@ -10,12 +10,6 @@
 
 ❤️ [theCodeCampus - Trainings for Angular and TypeScript](https://www.thecodecampus.de/)
 
-## Demo
-
-```
-
-```
-
 ## Installation
 
 **Download the NPM package**
