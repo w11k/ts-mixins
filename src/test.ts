@@ -1,4 +1,4 @@
-import {withBaseClassAndMixins, withMixins} from "./index";
+import {withBaseClassAndMixins} from "./index";
 
 class BaseClass {
     baseClassMethod() {
@@ -18,6 +18,24 @@ class Mixin2 {
     }
 }
 
+class Mixin3 {
+    mixin3Method() {
+        return 3;
+    }
+}
+
+class Mixin4 {
+    mixin4Method() {
+        return 4;
+    }
+}
+
+class Mixin5 {
+    mixin5Method() {
+        return 5;
+    }
+}
+
 describe("general semantics", () => {
     it("mixin methods can be accessed via the prototype", () => {
         class Sub extends withBaseClassAndMixins(BaseClass, Mixin1) {
@@ -26,25 +44,17 @@ describe("general semantics", () => {
         expect(Sub.prototype.mixin1Method).toBeDefined();
     });
 
+    /*
     it("mixin members must be compatible", () => {
         class Mx1 {
-            mem = 0;
+            foo = "0"; // incompatible types
         }
-        class Mx2 {
-            mem = "a";
-            set2() {
-                this.mem = "b";
-            }
+
+        // TODO: goal get a compiler error here
+        class Sub extends withBaseClassAndMixins(BaseClass, Mx1) {
         }
-        class Sub extends withMixins(Mx1, Mx2) {
-            met() {
-                return this.mem;
-            }
-        }
-        const sub = new Sub();
-        sub.set2();
-        expect(sub.met()).toEqual(0);
     });
+    */
 
     it("a mixin can have state", () => {
         class Mx {
@@ -164,24 +174,44 @@ describe("withBaseClassAndMixins 1-n mixins are supported", () => {
         expect(sub.mixin1Method()).toEqual(1);
         expect(sub.mixin2Method()).toEqual(2);
     });
-});
 
-describe("withMixins 1-n mixins are supported", () => {
-    it("1 mixin", () => {
-        class Sub extends withMixins(Mixin1) {
+    it("3 mixins", () => {
+        class Sub extends withBaseClassAndMixins(BaseClass, Mixin1, Mixin2, Mixin3) {
         }
 
         const sub = new Sub();
-        expect(sub.mixin1Method()).toEqual(1);
-    });
-
-    it("2 mixins", () => {
-        class Sub extends withMixins(Mixin1, Mixin2) {
-        }
-
-        const sub = new Sub();
+        expect(sub.baseClassMethod()).toEqual(0);
         expect(sub.mixin1Method()).toEqual(1);
         expect(sub.mixin2Method()).toEqual(2);
+        expect(sub.mixin3Method()).toEqual(3);
     });
+
+    it("4 mixins", () => {
+        class Sub extends withBaseClassAndMixins(BaseClass, Mixin1, Mixin2, Mixin3, Mixin4) {
+        }
+
+        const sub = new Sub();
+        expect(sub.baseClassMethod()).toEqual(0);
+        expect(sub.mixin1Method()).toEqual(1);
+        expect(sub.mixin2Method()).toEqual(2);
+        expect(sub.mixin3Method()).toEqual(3);
+        expect(sub.mixin4Method()).toEqual(4);
+    });
+
+    it("5 mixins", () => {
+        class Sub extends withBaseClassAndMixins(BaseClass, Mixin1, Mixin2, Mixin3, Mixin4, Mixin5) {
+        }
+
+        const sub = new Sub();
+        expect(sub.baseClassMethod()).toEqual(0);
+        expect(sub.mixin1Method()).toEqual(1);
+        expect(sub.mixin2Method()).toEqual(2);
+        expect(sub.mixin3Method()).toEqual(3);
+        expect(sub.mixin4Method()).toEqual(4);
+        expect(sub.mixin5Method()).toEqual(5);
+    });
+
 });
+
+
 
